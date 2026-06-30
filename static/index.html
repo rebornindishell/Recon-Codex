@@ -1,0 +1,133 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Recon-Codex</title>
+    <link rel="stylesheet" href="/static/styles.css" />
+  </head>
+  <body>
+    <aside class="sidebar">
+      <div class="brand">
+        <span class="mark">RC</span>
+        <div>
+          <strong>Recon-Codex</strong>
+          <small>Exposure inventory</small>
+        </div>
+      </div>
+      <nav>
+        <a href="#dashboard">Dashboard</a>
+        <a href="#inventory">Inventory</a>
+        <a href="#findings">Findings</a>
+        <a href="#imports">Imports</a>
+        <a href="#connectors">Connectors</a>
+      </nav>
+      <button id="dailyMonitor" class="secondary">Run 24h Monitor</button>
+    </aside>
+
+    <main>
+      <section id="dashboard" class="band">
+        <div class="toolbar">
+          <div>
+            <h1>External Asset Command Center</h1>
+            <p>Inventory, exposure, vulnerability context, and business priority in one place.</p>
+          </div>
+          <button id="refresh">Refresh</button>
+        </div>
+        <div class="metrics" id="metrics"></div>
+      </section>
+
+      <section class="band split">
+        <form id="assetForm" class="panel">
+          <h2>Add Asset</h2>
+          <div class="grid">
+            <label>Type<select name="asset_type" required>
+              <option value="domain">Domain</option>
+              <option value="subdomain">Subdomain</option>
+              <option value="ip">IP</option>
+              <option value="url">URL</option>
+              <option value="email">Email</option>
+              <option value="mobile_app">Mobile App</option>
+              <option value="software_service">Software Service</option>
+            </select></label>
+            <label>Value<input name="value" required placeholder="api.example.com" /></label>
+            <label>Business Unit<input name="business_unit_id" placeholder="ID, optional" /></label>
+            <label>Owner<input name="owner" placeholder="Platform Security" /></label>
+            <label>Environment<input name="environment" placeholder="prod" /></label>
+            <label>Criticality<select name="criticality">
+              <option>medium</option><option>low</option><option>high</option><option>critical</option>
+            </select></label>
+            <label>Priority<select name="priority">
+              <option>P3</option><option>P4</option><option>P2</option><option>P1</option>
+            </select></label>
+            <label>Tags<input name="tags" placeholder="customer-facing, payment" /></label>
+            <label>Software<input name="software_name" placeholder="nginx" /></label>
+            <label>Version<input name="software_version" placeholder="1.18.0" /></label>
+          </div>
+          <label class="check"><input type="checkbox" name="exposed" /> Internet exposed</label>
+          <label>Notes<textarea name="notes" rows="3"></textarea></label>
+          <button type="submit">Add / Update</button>
+        </form>
+
+        <form id="discoveryForm" class="panel">
+          <h2>Discovery</h2>
+          <label>Domains<textarea name="domains" rows="6" placeholder="example.com&#10;example.ae"></textarea></label>
+          <button type="submit">Run Discovery</button>
+          <button type="button" id="vulnCheck" class="secondary">Run Vulnerability Check</button>
+          <p class="hint">The first connector is heuristic. API/CLI integrations are stubbed so we can wire your real keys and tools next.</p>
+        </form>
+      </section>
+
+      <section id="inventory" class="band">
+        <div class="section-head">
+          <h2>Inventory</h2>
+          <input id="assetFilter" placeholder="Filter assets" />
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Asset</th><th>Type</th><th>Criticality</th><th>Priority</th><th>Risk</th><th>Exposure</th><th>Software</th><th>Recommendation</th>
+              </tr>
+            </thead>
+            <tbody id="assetRows"></tbody>
+          </table>
+        </div>
+      </section>
+
+      <section id="findings" class="band">
+        <div class="section-head">
+          <h2>Findings</h2>
+          <span id="findingCount" class="pill">0 open</span>
+        </div>
+        <div id="findingRows" class="findings"></div>
+      </section>
+
+      <section id="imports" class="band split">
+        <form id="csvForm" class="panel">
+          <h2>CSV Import</h2>
+          <textarea name="csv" rows="9">asset_type,value,owner,tags,criticality,priority,environment,source,exposed,software_name,software_version
+subdomain,api.example.com,Platform,"api,prod",high,P2,prod,manual,true,nginx,1.18.0</textarea>
+          <button type="submit">Import CSV</button>
+        </form>
+
+        <form id="jsonForm" class="panel">
+          <h2>JSON Import</h2>
+          <textarea name="json" rows="9">{"assets":[{"asset_type":"url","value":"https://portal.example.com","criticality":"critical","priority":"P1","tags":["customer-facing"],"exposed":true}]}</textarea>
+          <button type="submit">Import JSON</button>
+        </form>
+      </section>
+
+      <section id="connectors" class="band">
+        <div class="section-head">
+          <h2>Connectors</h2>
+          <span class="pill">API and CLI readiness</span>
+        </div>
+        <div id="connectorRows" class="connectors"></div>
+      </section>
+    </main>
+
+    <div id="toast" role="status"></div>
+    <script src="/static/app.js"></script>
+  </body>
+</html>
